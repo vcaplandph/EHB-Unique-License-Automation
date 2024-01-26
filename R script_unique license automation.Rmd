@@ -1,0 +1,62 @@
+---
+title: "License data review"
+author: "Valerie Caplan"
+date: "2024-01-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## License data automation
+
+```{r}
+
+#install.packages("readxl")
+#install.packages("dplyr")
+#install.packages("writexl")
+
+library(readxl)
+library(dplyr)
+library(writexl)
+
+
+#Set working directory
+setwd("C:/Users/valerie caplan/OneDrive - CCSF/Data Automation")
+
+#Read in excel file License A
+license_a <- read_excel("License A.xlsx")
+
+#Rename column License number
+license_a <- license_a %>% rename(License_number = `License number`)
+
+#Read in excel file License B
+license_b <- read_excel("License B.xlsx")
+
+#Rename column License number
+license_b <- license_b %>% rename(License_number = `License number`)
+
+
+#Find unique values between the two data frames 
+all_unique_values <- license_a %>%
+  select(License_number) %>%
+  bind_rows(license_b %>% select(License_number)) %>%
+  count(License_number) %>%
+  filter (n == 1) %>%
+  rename(count = n)
+
+#generate current date for file name
+current_date <- format(Sys.Date(), "%Y-%m-%d")
+
+#create file name with date stamp
+file_name <- paste0("C:/Users/valerie caplan/OneDrive - CCSF/Data Automation/all_unique_values_", current_date, ".xlsx")
+
+#Identify dataframe
+data_frame <-data.frame(all_unique_values)
+
+#export data frame to xlsx document
+write_xlsx(data_frame, file_name)
+
+
+```
